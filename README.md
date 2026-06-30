@@ -102,15 +102,6 @@ python reports/report_generator.py        # generates a sample PDF report
 python forecasting/hiring_trend_forecast.py
 ```
 
-## 🛣️ Roadmap for the full build
-
-1. Implement portal-specific scraper selectors (`scraper/job_scraper.py`) for Naukri, LinkedIn, Indeed, Glassdoor
-2. Run the ETL pipeline against scraped data and load into PostgreSQL (`database/schema.sql`)
-3. Replace synthetic training data in `models/salary_predictor.py` with real warehouse data
-4. Wire up Power BI against the PostgreSQL warehouse for the executive/BI dashboards
-5. Add user authentication (JWT) to `api/main.py` for the Users/Resumes/Reports tables
-6. Deploy: Streamlit Cloud or Render for the dashboard, Render/Railway for the FastAPI backend
-
 ## 📄 License
 
 Educational/academic project — for placement and internship portfolio use.
