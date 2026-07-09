@@ -71,7 +71,9 @@ elif page == "Career Roadmap":
     render()
 
 elif page == "Skill Gap":
-    st.info("🚧 Skill Gap module coming soon!")
+    from dashboard.skill_gap import render
+    render()
 
 elif page == "Settings":
-    st.info("⚙️ Settings coming soon.")
+    from dashboard.settings import render
+    render()
