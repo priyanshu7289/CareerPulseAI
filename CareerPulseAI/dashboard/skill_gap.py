@@ -1,6 +1,6 @@
 import streamlit as st
 
-from resume_parser.file_parser import extract_text
+from resume_parser.file_parser import extract_resume_text
 from resume_parser.skill_extractor import SkillExtractor
 
 
@@ -34,7 +34,10 @@ def render():
 
             try:
 
-                resume_text = extract_text(uploaded_resume)
+                resume_text = extract_resume_text(
+    uploaded_resume,
+    uploaded_resume.name
+)
 
                 extractor = SkillExtractor()
 
