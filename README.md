@@ -103,6 +103,29 @@ CareerPulseAI/
 ✅ Settings
 
 ---
+## Dashboard
+
+![Dashboard](screenshots/dashboard.png)
+
+## Resume Analyzer
+
+![Resume Analyzer](screenshots/resume.png)
+
+## Skill Gap
+
+![Skill Gap](screenshots/skillgap.png)
+
+## Salary Predictor
+
+![Salary Predictor](screenshots/salary.png)
+
+## Career Roadmap
+
+![Career Roadmap](screenshots/roadmap.png)
+
+## Settings
+
+![Settings](screenshots/settings.png)
 
 ## 🚀 Future Improvements
 
