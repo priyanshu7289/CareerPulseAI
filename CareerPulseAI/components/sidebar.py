@@ -1,6 +1,6 @@
 """
 components/sidebar.py
-CareerPulse AI v3 Sidebar
+CareerPulse AI v4 Sidebar
 """
 
 import streamlit as st
@@ -11,15 +11,42 @@ def render_sidebar():
 
     with st.sidebar:
 
+        st.markdown("""
+        <style>
+
+        section[data-testid="stSidebar"]{
+            background:#1E1E2E;
+        }
+
+        .user-card{
+            background:#FFFFFF;
+            padding:20px;
+            border-radius:16px;
+            text-align:center;
+            margin-bottom:20px;
+            box-shadow:0 5px 15px rgba(0,0,0,.15);
+        }
+
+        .user-card h3{
+            color:#111827 !important;
+            margin-bottom:5px;
+            font-size:20px;
+        }
+
+        .user-card p{
+            color:#4B5563 !important;
+            margin-top:0;
+            font-size:16px;
+        }
+
+        </style>
+        """, unsafe_allow_html=True)
+
         user = st.session_state.get("user")
 
-        st.markdown(
-            """
-            <div style="text-align:center;">
-                <img src="https://img.icons8.com/color/96/artificial-intelligence.png" width="80">
-            </div>
-            """,
-            unsafe_allow_html=True,
+        st.image(
+            "https://img.icons8.com/color/96/artificial-intelligence.png",
+            width=90,
         )
 
         st.markdown(
@@ -28,40 +55,26 @@ def render_sidebar():
         )
 
         st.markdown(
-            "<p style='text-align:center;color:gray;'>AI Career Intelligence Platform</p>",
+            "<p style='text-align:center;color:#9CA3AF;'>AI Career Intelligence Platform</p>",
             unsafe_allow_html=True,
         )
 
         st.divider()
 
-        # ---------------- USER ----------------
-
         if user:
 
             st.markdown(
                 f"""
-                <div style="
-                    background:#F5F7FA;
-                    padding:18px;
-                    border-radius:15px;
-                    text-align:center;
-                    margin-bottom:20px;
-                ">
+                <div class="user-card">
 
-                <h3 style="margin-bottom:5px;">
-                    👤 {user['name']}
-                </h3>
+                <h3>👤 {user['name']}</h3>
 
-                <p style="color:#666;margin-top:0;">
-                    {user['target_role']}
-                </p>
+                <p>{user['target_role']}</p>
 
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
-
-        # ---------------- MENU ----------------
 
         selected = option_menu(
             menu_title=None,
@@ -90,40 +103,46 @@ def render_sidebar():
 
             styles={
                 "container": {
-                    "padding": "0!important",
-                    "background-color": "#ffffff",
+                    "padding": "0",
+                    "background-color": "#FFFFFF",
+                    "border-radius": "16px",
                 },
 
                 "icon": {
                     "color": "#2563EB",
-                    "font-size": "18px",
+                    "font-size": "20px",
                 },
 
                 "nav-link": {
+                    "color": "#111827",
                     "font-size": "16px",
+                    "font-weight": "600",
                     "text-align": "left",
-                    "margin": "4px",
-                    "--hover-color": "#EEF4FF",
+                    "padding": "12px",
+                    "margin": "5px",
                     "border-radius": "10px",
+                    "--hover-color": "#EEF4FF",
                 },
 
                 "nav-link-selected": {
                     "background-color": "#2563EB",
+                    "color": "#FFFFFF",
+                    "font-weight": "700",
                 },
             },
         )
 
         st.divider()
 
-        # ---------------- QUICK STATS ----------------
-
         st.markdown("### 📊 Quick Stats")
 
-        c1, c2 = st.columns(2)
+        col1, col2 = st.columns(2)
 
-        c1.metric("Score", "84")
+        with col1:
+            st.metric("Score", "84")
 
-        c2.metric("Reports", "12")
+        with col2:
+            st.metric("Reports", "12")
 
         st.divider()
 
@@ -133,14 +152,9 @@ def render_sidebar():
 
         st.divider()
 
-        # ---------------- LOGOUT ----------------
-
         if st.button("🚪 Logout", use_container_width=True):
-
             st.session_state.logged_in = False
             st.session_state.user = None
-            st.session_state.auth_page = "login"
-
             st.rerun()
 
     return selected
