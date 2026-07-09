@@ -1,23 +1,101 @@
+"""
+dashboard/skill_gap.py
+CareerPulse AI - Skill Gap Analysis
+"""
+
 import streamlit as st
 
 from resume_parser.file_parser import extract_resume_text
 from resume_parser.skill_extractor import SkillExtractor
 
 
+ROLE_SKILLS = {
+
+    "Data Analyst": [
+        "Python",
+        "SQL",
+        "Excel",
+        "Power BI",
+        "Tableau",
+        "Statistics",
+        "Machine Learning",
+    ],
+
+    "Business Analyst": [
+        "Excel",
+        "SQL",
+        "Power BI",
+        "Tableau",
+        "Communication",
+    ],
+
+    "Data Scientist": [
+        "Python",
+        "SQL",
+        "Machine Learning",
+        "Deep Learning",
+        "Statistics",
+    ],
+
+    "Data Engineer": [
+        "Python",
+        "SQL",
+        "Spark",
+        "Airflow",
+        "AWS",
+    ],
+
+    "ML Engineer": [
+        "Python",
+        "TensorFlow",
+        "PyTorch",
+        "Docker",
+        "Machine Learning",
+    ],
+}
+
+
+COURSE_RECOMMENDATIONS = {
+
+    "Python": "Python for Data Analytics",
+
+    "SQL": "Advanced SQL",
+
+    "Power BI": "Microsoft Power BI",
+
+    "Tableau": "Tableau Desktop Specialist",
+
+    "Machine Learning": "Machine Learning Specialization",
+
+    "Statistics": "Statistics for Data Science",
+
+    "Spark": "Apache Spark Fundamentals",
+
+    "AWS": "AWS Cloud Practitioner",
+
+    "Airflow": "Apache Airflow Bootcamp",
+
+    "TensorFlow": "TensorFlow Developer",
+
+    "PyTorch": "PyTorch Fundamentals",
+
+    "Docker": "Docker Essentials",
+
+    "Communication": "Business Communication",
+}
+
+
 def render():
 
     st.title("📈 Skill Gap Analysis")
-    st.write("Analyze your resume against your target role.")
+
+    st.write(
+        "Upload your resume and compare your skills with your target role."
+    )
 
     role = st.selectbox(
         "Target Role",
-        [
-            "Data Analyst",
-            "Business Analyst",
-            "Data Scientist",
-            "Data Engineer",
-            "ML Engineer",
-        ],
+        list(ROLE_SKILLS.keys()),
     )
 
     uploaded_resume = st.file_uploader(
@@ -26,173 +104,153 @@ def render():
     )
 
     if uploaded_resume is None:
+        st.info("Upload your resume to begin analysis.")
         return
 
-    if st.button("Analyze Skill Gap"):
+    if not st.button("Analyze Skill Gap", use_container_width=True):
+        return
 
-        with st.spinner("Analyzing Resume..."):
+    with st.spinner("Analyzing your resume..."):
 
-            try:
+        try:
 
-                resume_text = extract_resume_text(
-    uploaded_resume,
-    uploaded_resume.name
-)
-
-                extractor = SkillExtractor()
-
-                current_skills = extractor.extract_skills(resume_text)
-
-            except Exception as e:
-
-                st.error(f"Resume Parsing Failed\n\n{e}")
-
-                return
-
-        role_skills = {
-
-            "Data Analyst": [
-                "Python",
-                "SQL",
-                "Excel",
-                "Power BI",
-                "Tableau",
-                "Statistics",
-                "Machine Learning",
-            ],
-
-            "Business Analyst": [
-                "Excel",
-                "SQL",
-                "Power BI",
-                "Tableau",
-                "Communication",
-            ],
-
-            "Data Scientist": [
-                "Python",
-                "Machine Learning",
-                "Deep Learning",
-                "Statistics",
-                "SQL",
-            ],
-
-            "Data Engineer": [
-                "Python",
-                "SQL",
-                "Spark",
-                "Airflow",
-                "AWS",
-            ],
-
-            "ML Engineer": [
-                "Python",
-                "TensorFlow",
-                "PyTorch",
-                "Docker",
-                "ML",
-            ],
-        }
-
-        required_skills = role_skills.get(role, [])
-
-        current_skills = list(set(current_skills))
-
-        missing_skills = [
-            skill
-            for skill in required_skills
-            if skill.lower()
-            not in [s.lower() for s in current_skills]
-        ]
-
-        score = int(
-            (
-                (len(required_skills) - len(missing_skills))
-                / len(required_skills)
+            resume_text = extract_resume_text(
+                uploaded_resume,
+                uploaded_resume.name,
             )
-            * 100
-        )
 
-        st.subheader("🎯 Skill Match")
+            extractor = SkillExtractor()
 
-        st.metric("Overall Match", f"{score}%")
-
-        st.progress(score / 100)
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-
-            st.subheader("✅ Current Skills")
-
-            if current_skills:
-
-                for skill in sorted(current_skills):
-                    st.success(skill)
-
+            # Compatible with both versions
+            if hasattr(extractor, "extract_skills"):
+                current_skills = extractor.extract_skills(resume_text)
             else:
-                st.warning("No skills detected.")
+                current_skills = extractor.extract(resume_text)
 
-        with col2:
+        except Exception as e:
 
-            st.subheader("❌ Missing Skills")
+            st.error(f"❌ Resume parsing failed\n\n{e}")
 
-            if missing_skills:
+            return
 
-                for skill in missing_skills:
-                    st.error(skill)
+    current_skills = sorted(set(current_skills))
 
-            else:
+    required_skills = ROLE_SKILLS[role]
 
-                st.success("Excellent! No missing skills.")
+    current_lower = {skill.lower() for skill in current_skills}
 
-        st.divider()
+    missing_skills = [
 
-        st.subheader("📚 Recommended Learning")
+        skill
 
-        recommendations = {
+        for skill in required_skills
 
-            "Tableau":
-                "Tableau Desktop Specialist",
+        if skill.lower() not in current_lower
 
-            "Machine Learning":
-                "Machine Learning Specialization",
+    ]
 
-            "Spark":
-                "Apache Spark Fundamentals",
+    matched_skills = [
 
-            "AWS":
-                "AWS Cloud Practitioner",
+        skill
 
-            "Airflow":
-                "Apache Airflow Bootcamp",
+        for skill in required_skills
 
-            "Power BI":
-                "Microsoft Power BI",
+        if skill.lower() in current_lower
 
-            "Statistics":
-                "Statistics for Data Science",
+    ]
 
-            "SQL":
-                "Advanced SQL",
+    score = round(
 
-            "Python":
-                "Python for Data Analytics",
-        }
+        (len(matched_skills) / len(required_skills)) * 100
+
+    )
+
+    st.divider()
+
+    st.subheader("🎯 Overall Skill Match")
+
+    st.metric("Match Score", f"{score}%")
+
+    st.progress(score / 100)
+
+    if score >= 85:
+
+        st.success("Excellent! Your profile matches this role very well.")
+
+    elif score >= 65:
+
+        st.warning("Good profile. Learn a few more skills to improve.")
+
+    else:
+
+        st.error("Significant skill gap detected.")
+
+    st.divider()
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        st.subheader("✅ Skills Found")
+
+        if current_skills:
+
+            for skill in current_skills:
+
+                st.success(skill)
+
+        else:
+
+            st.warning("No skills detected.")
+
+    with col2:
+
+        st.subheader("❌ Missing Skills")
+
+        if missing_skills:
+
+            for skill in missing_skills:
+
+                st.error(skill)
+
+        else:
+
+            st.success("No missing skills!")
+
+    st.divider()
+
+    st.subheader("📚 Recommended Learning")
+
+    if missing_skills:
 
         for skill in missing_skills:
 
-            course = recommendations.get(skill, f"Learn {skill}")
+            course = COURSE_RECOMMENDATIONS.get(
 
-            st.write(f"• **{skill}** → {course}")
+                skill,
 
-        st.info(
-            f"""
-🤖 AI Recommendation
+                f"Learn {skill}",
 
-Your profile currently matches **{score}%** of the skills required
-for a **{role}** role.
+            )
 
-Focus on the missing skills above to improve your employability.
+            st.write(f"**{skill}** → {course}")
+
+    else:
+
+        st.success("No additional courses required.")
+
+    st.divider()
+
+    st.info(
+        f"""
+### 🤖 AI Recommendation
+
+**Target Role:** {role}
+
+**Current Match:** {score}%
+
+Continue improving the missing skills to increase your interview chances.
+
+A skill match above **85%** is generally considered highly competitive for internship and entry-level roles.
 """
-        )
+    )
